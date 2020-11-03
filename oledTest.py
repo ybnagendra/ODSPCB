@@ -1,41 +1,138 @@
-#!/usr/bin/env python
+# To Capture image OLED Display
 
-#!/usr/bin/env python
-
+from OmegaExpansion import oledExp
 import time
-from DS3231 import DS3231_Driver
 
-# Main Program
-ds3231 = DS3231_Driver.SDL_DS3231(0, 0x68)
+def welcomeMessage():
+    oledExp.setVerbosity(0)
+    oledExp.driverInit()
+    oledExp.setCursor(3, 0)
+    oledExp.write("Welcome to OnionOmega")
+    oledExp.setCursor(4, 0)
+    oledExp.write("Data Logger Project")
+    time.sleep(2)
 
-# comment out the next line after the clock has been initialized
-# ds3231.write_now()                    #through Wifi
-# ds3231.set_datetime()                 #through user input
+def displayModes():
+    oledExp.clear()
+    oledExp.setCursor(0, 0)
+    oledExp.write("Select mode(1,2,3):")
+    oledExp.setCursor(1, 0)
+    oledExp.write("1. CONF MODE")
+    oledExp.setCursor(2, 0)
+    oledExp.write("2. RUN MODE")
+    oledExp.setCursor(3, 0)
+    oledExp.write("3. BACKUP MODE")
+    oledExp.setCursor(5, 0)
+    oledExp.write("Mode of Operation:")
 
-# Main Loop - sleeps 10 seconds, then reads and prints values of all clocks
+def conf_oledDisplay1():
+    oledExp.clear()
+    oledExp.setCursor(0, 0)
+    oledExp.write("Conf. Processing")
+    oledExp.setCursor(6, 0)
+    oledExp.write("*********************")
+    oledExp.setCursor(7, 3)
+    oledExp.write("CONFIGURE MODE")
 
+def conf_oledDisplay2(self):
+    oledExp.setCursor(2, 0)
+    oledExp.write("Configuartion done")
+    oledExp.setCursor(4, 9)
+    oledExp.write("WAIT")
+    time.sleep(2)
+    oledExp.clear()
+
+def run_oledDisplay1():
+    d = GET_DATE_TIME()
+    print("Remove Pendrive to enter run mode")
+    oledExp.setCursor(0, 0)
+    oledExp.write(d.oledDate)
+    oledExp.setCursor(1, 0)
+    oledExp.write("*********************")
+    oledExp.setCursor(2, 3)
+    oledExp.write("Remove USB to ")
+    oledExp.setCursor(3, 3)
+    oledExp.write("enter run mode ")
+    oledExp.setCursor(6, 0)
+    oledExp.write("*********************")
+    oledExp.setCursor(7, 3)
+    oledExp.write("WAITING MODE")
+    time.sleep(2)
+
+def run_oledDisplay2():
+    oledExp.setCursor(3, 0)
+    oledExp.write("USB Connected")
+    time.sleep(1)
+    oledExp.clear()
+
+def bkp_oledDisplay1():
+    oledExp.clear()
+    oledExp.setCursor(0, 0)
+    oledExp.write("Enter FROM and TO")
+    oledExp.setCursor(1, 0)
+    oledExp.write("dates in the format:")
+    oledExp.setCursor(2, 0)
+    oledExp.write("dd*mm*yy ")
+    oledExp.setCursor(3, 0)
+    oledExp.write("Ex: 23/01/20")
+    time.sleep(2)
+
+def bkp_oledDisplay2():
+    oledExp.clear()
+    oledExp.setCursor(1, 0)
+    oledExp.write("FROM DATE: ")
+    oledExp.setCursor(2, 0)
+    oledExp.write(fromDate)
+
+def bkp_oledDisplay3():
+    oledExp.clear()
+    oledExp.setCursor(1, 0)
+    oledExp.write("TO DATE: ")
+    oledExp.setCursor(2, 0)
+    oledExp.write(toDate)
 
 if __name__ == "__main__":
-        key=raw_input("Enter the mode 1 or 2: ")
-        if (key == '1'):
-                ds3231.set_datetime()
-        elif(key == '2'):
-                pass
+    welcomeMessage()
 
-        while(1):
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    displayModes()
 
-                DS3231=ds3231.read_datetime()
-                ds=str(DS3231)
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    conf_oledDisplay1()
 
-                dt1=ds[8:10]+ds[5:7]+ds[2:4]
-                #print(dt1)
-                _secs=ds[17:]
-                _mnts=ds[14:16]
-                secs=int(_secs)
-                mnts=int(_mnts)
-                if secs%5==0:
-                        print(mnts, secs, dt1)
-                        print(ds)
-                        #print("DS3231=\t%s" % ds3231.read_datetime())
-                        time.sleep(1)
-                        print("")
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    conf_oledDisplay2()
+
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    run_oledDisplay1()
+
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    run_oledDisplay2()
+
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    bkp_oledDisplay1()
+
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    bkp_oledDisplay2()
+
+    raw_input("Press any Key: ")
+    oledExp.clear()
+    time.sleep(1)
+    bkp_oledDisplay3()
+
+
+
