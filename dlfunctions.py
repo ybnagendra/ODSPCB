@@ -1,28 +1,30 @@
-import RTC_Driver                                                                                                                                   
-import os.path                                                                                                                                      
-                                                                                                                                                    
-rawDirPath = '/mnt/mmcblk0p1/STM32V1/RawDir'                                                                                                        
-bkpDirPath = '/mnt/mmcblk0p1/STM32V1/BkpDir'                                                                                                        
-                                                                                                                                                    
-# Global Variables                                                                                                                                  
-parameters = "PM,SO2,NOX,NO2"                                                                                                                       
-units = "mg/Nm3,mg/Nm3,mg/Nm3"                                                                                                                      
-analyzers = "analyzer_8,analyzer_742,analyzer_742"                                                                                                  
-                                                                                                                                                    
-site_id = "site_3017"                                                                                                                               
-plant_name = "M/s.MGM Minerals Limited(Formerly MGM Steels Ltd.)"                                                                                   
-plant_address1 = "Rourkela Rourkela"                                                                                                                
-plant_address2 = "754025 Odisha"                                                                                                                    
-plant_country = "India"                                                                                                                             
-                                                                                                                                                    
-station_name = "CEMS_1"                                                                                                                             
-iso_latitude = "20.566567"                                                                                                                          
-iso_longtitude = "85.896499"                                                                                                                        
-                                                                                                                                                    
-#filename = site_id+'_'+station_name+'_'+year+month+date+hour+minte+"00"                                                                            
-                                                                                                                                                    
-a = ["NH3", "CO2", "CO", "HCL", "HF", "NO2", "NO", "NOX",                                                                                           
-     "SO2", "F", "O3", "HG", "pH", "PM10", "PM2.5", "PM",                                                                                           
+import RTC_Driver
+import os.path
+import serial,time
+
+ser = serial.Serial(port="/dev/ttyS1", baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=10)
+rawDirPath = '/mnt/mmcblk0p1/STM32V1/RawDir'
+bkpDirPath = '/mnt/mmcblk0p1/STM32V1/BkpDir'
+
+# Global Variables
+parameters = "PM,SO2,NOX,NO2"
+units = "mg/Nm3,mg/Nm3,mg/Nm3"
+analyzers = "analyzer_8,analyzer_742,analyzer_742"
+
+site_id = "site_3017"
+plant_name = "M/s.MGM Minerals Limited(Formerly MGM Steels Ltd.)"
+plant_address1 = "Rourkela Rourkela"
+plant_address2 = "754025 Odisha"
+plant_country = "India"
+
+station_name = "CEMS_1"
+iso_latitude = "20.566567"
+iso_longtitude = "85.896499"
+
+#filename = site_id+'_'+station_name+'_'+year+month+date+hour+minte+"00"
+
+a = ["NH3", "CO2", "CO", "HCL", "HF", "NO2", "NO", "NOX",
+     "SO2", "F", "O3", "HG", "pH", "PM10", "PM2.5", "PM",
      "NOx", "SOx", "O3", "Flow", "TSS", "BOD", "COD", "PH", "DY"]                                                                                   
                                                                                                                                                     
 code = ["21", "17", "04", "07", "06", "03", "02", "35",                                                                                             
@@ -261,7 +263,21 @@ def collect_data():
     maxAbs = [1000, 2000, 2000, 1000]                                                                                                               
     multiplyFactors = [1, 1, 1, 1]                                                                                                                  
                                                                                                                                                     
-    response = "+04.023+07.906+05.432+25.000+00.000+00.000+00.000+00.000"                                                                           
+    #response = "+04.023+07.906+05.432+25.000+00.000+00.000+00.000+00.000"                                                                          
+    if ser.is_open == False:                                                                                                                        
+        ser.open()                                                                                                                                  
+        print('Serial Port Open')                                                                                                                   
+    ser.flush()                                                                                                                                     
+    ser.flushInput()                                                                                                                                
+    ser.flushOutput()                                                                                                                               
+    print('Flush serial port before use')                                                                                                           
+    ser.write('#01\r')                                                                                                                              
+    response = ser.read()  # read serial port                                                                                                       
+    time.sleep(0.03)                                                                                                                                
+    data_left = ser.inWaiting()  # check for remaining byte                                                                                         
+    response += ser.read(data_left)                                                                                                                 
+    ser.close()                                                                                                                                     
+                                                                                                                                                    
     aRxBuffer = response                                                                                                                            
                                                                                                                                                     
     for i in range(0, 6):                                                                                                                           
@@ -384,11 +400,11 @@ def create_zipdata():
     #print(S_buf)                                                                                                                                   
     # get time                                                                                                                                      
     r=RTC_DATE_TIME()                                                                                                                               
-    year = int(r.year)                                                                                                                              
-    month2 = int(r.month)                                                                                                                           
-    date = int(r.day)                                                                                                                               
-    hour = int(r.hours)                                                                                                                             
-    min_t = int(r.minutes)                                                                                                                          
+    year = r.year                                                                                                                                   
+    month2 = r.month                                                                                                                                
+    date = r.day                                                                                                                                    
+    hour = r.hours                                                                                                                                  
+    min_t = r.minutes                                                                                                                               
                                                                                                                                                     
     #print("*************************************************\n")                                                                                   
     #print(year, month2, date, hour, min_t)                                                                                                         
