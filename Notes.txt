@@ -1,0 +1,11 @@
+Prepared the project in PEP format.
+SPCB Version2 
+File is send to Realtime upload and Delayed Upload.
+Tested it on Windows PC.
+Only SPCB.
+
+Code is reduced by using direct paths.
+Removed unnecessary functions.
+Naming the function names as per standards of PEP.
+
+
